@@ -1,3 +1,5 @@
+For the first homework:
+
 Way of thinking: I use a synchronized queue in which I initially put the paths to the files to be processed by the Mappers, from which I keep removing and giving the Mappers one file at a time, then as they perform the operations and create the partial lists, they are added back into a the queue from where they are taken by Reductions that unify the perfect powers for each exponent, count them and at the end write the final result in the output files.
 
 Functions:
