@@ -1,39 +1,37 @@
-Idee de implementare:
-Am pornit de la modelul Fork-Join Pool. Creez un ForkJoinPool care are dimensiunea maxima de thread-uri egala cu numarul de thread-uri
-dat la apelare(P). Creez(invoke) un task(thread) de Read, care la randul sau(in ReadTask class) imi va creea mai multe thread-uri, inca cateva de Read pentru
-citirea din fisierul orders.txt, si altele de process care vor vedea comanda si o vor procesa- fiecare task de process care vede produsele
-dintr o comanda, imi creeaza alte noi sub thread-uri de Process care se ocupa cu scrierea in paralel in fisierul de out "orderID, productID, shipped",
-apoi cand o comanda are toate produsele scrise cu shipped de catre noile thread-uri de process, thread-ul mare de process care le-a subcreat pt
-comanda coresp lui, este cel care imi va scrie in fisierul "orders_out.txt" shipped pt toata comanda(asa cum se mentioneaza ca trebuie sa se intample
-in ultimul punct mentionat al temei la sectiunea "WorkFlow".
+Implementation idea:
+We started from the Fork-Join Pool model. I create a ForkJoinPool that has the maximum size of threads equal to the number of threads
+given on call(P). I create (invoke) a Read task (thread), which in turn (in the ReadTask class) will create several threads for me, a few more Read for
+reading from the orders.txt file, and other process tasks that will see the order and process it - each process task that sees the products
+from an order, it creates new sub-threads of Process that deal with writing in parallel in the out file "orderID, productID, shipped",
+then when an order has all the products written with shipped by the new process threads, the big process thread that subcreated them for
+corresponding order, he is the one who will write in the file "orders_out.txt" shipped for the whole order (as it is mentioned that it must happen
+in the last mentioned point of the theme in the "WorkFlow" section.
 
-Pentru a respecta principiile OOP, am mai multe clase, fiecare ocupandu-se cu un lucru specific:
+To follow OOP principles, I have several classes, each one dealing with a specific thing:
 
-FolderReader - clasa care imi ia folder-uri cu fisierele de intrare, si imi scoate din folder fisierele de input in 2 variabile.
+FolderReader - the class that takes my folders with the input files, and takes the input files from the folder into 2 variables.
 
-OrdersReader - clasa care imi citeste fisierul de input "orders.txt" line by line, si imi imparte o linie de input in [orderID, nrProduse],
-fiindca la inceput este primit ca un String.
+OrdersReader - the class that reads my input file "orders.txt" line by line, and gives me an input line in [orderID, nrProduse],
+because at first it is received as a String.
 
-OrderEntry - clasa folosita doar pt a-mi tine perechea dintre orderID, nrProduse din order-ul respectiv.
+OrderEntry - the class used only to keep the pair of orderID, nrProducts from the respective order.
 
-OrderProductsReader - clasa care imi citeste fisierul orders_products.txt si imi cauta un produs pt o comanda anume, apoi cand cauta
-                     urmatorul produs din comanda, pleaca de la pozitia la care s a gasit produsul anterior.
+OrderProductsReader - the class that reads my orders_products.txt file and searches for a product for a specific order, then when searching
+                      the next product in the order starts from the position where the previous product was found.
 
-ProcessProductsWriter - clasa ce extinde recursiveTask, si care contine metoda Compute ce va fi apelata de sub-thread-urile
-                        create de thread-urile de process de process(cand sunt apelate cu fork) pentru a scrie in fisierul
-                        de output "orderID, productID, shipped".
-ProcessTask - clasa ce contine metoda de Compute apelata de thread-urile de process initiale care au fost create de primul thread de Read.
-             In ea caut toate produsele dintr o comanda specifica, apoi fiecare produs in parte dintr o comanda il dau la randul lui
-             altul sub-thread care va apela functia compute din ProcessProductsWriter explicata mai sus ca sa imi faca scrierea in fisierul
-             de out. La final, ProcessTask-ul(thread-ul) curent scrie in fisierul "orders_out.txt" "shipped" pt toata comanda.
+ProcessProductsWriter - the class that extends recursiveTask, and which contains the Compute method that will be called by the sub-threads
+                         created by process threads (when called with fork) to write to the file
+                         of output "orderID, productID, shipped".
+ProcessTask - the class that contains the Compute method called by the initial process threads that were created by the first Read thread.
+              In it I look for all the products from a specific order, then I give each product in part of an order in turn
+              another sub-thread that will call the compute function from ProcessProductsWriter explained above to write to the file
+              of out. At the end, the current ProcessTask (thread) writes "shipped" for the entire order in the "orders_out.txt" file.
 
-ProductsAndOrderID - clasa ajutatoare care imi inglobeaza campurile orderID, productID.
+ProductsAndOrderID - the helper class that includes my orderID, productID fields.
 
-ReadTask - clasa folosita pentru a creea toate thread-urile de Read si Process, plecand de la un singur thread de Read dat in Main(Tema2)
-            in invoke => folosita pentru a da fork si join la toate aceste thread-uri.
+ReadTask - the class used to create all Read and Process threads, starting from a single Read thread given in Main (Tema2)
+             in invoke => used to fork and join all these threads.
 
-Tema2 - clasa de main, initializarile necesare.
-
-
+Topic 2 - main class, necessary initializations.
 
 
